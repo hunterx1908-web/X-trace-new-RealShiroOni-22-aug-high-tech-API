@@ -9,16 +9,16 @@ app = Flask(__name__)
 VALID_KEY = "@RealShiroOni"
 
 # Original API details
-ORIGINAL_API_URL = "https://osint-api-delta.vercel.app/api/leak-v3"
-ORIGINAL_KEY = "@x_TRACEOWNER"
+ORIGINAL_API_URL = "https://hb5vhd.kubeletto.app/api/leak-v3"
+ORIGINAL_KEY = "Bhai"
 
-# 🔥 API Expiry Date (21 September 2026)
+# 🔥 API Expiry Date (4 din — aaj included)
 API_EXPIRY = "2026-09-21"
 
 def is_expired():
     try:
         expiry = datetime.strptime(API_EXPIRY, "%Y-%m-%d")
-        return datetime.now() > expiry
+        return datetime.utcnow() > expiry
     except:
         return False
 
@@ -26,7 +26,7 @@ def is_expired():
 def home():
     return jsonify({
         "status": True,
-        "message": "High-Tech Own API is working! (X-TRACE Edition)",
+        "message": "High-Tech Leak API is working! (X-TRACE Edition)",
         "developer": "@x_TRACEOWNER",
         "credit": "@x_TRACEOWNER",
         "expires_on": API_EXPIRY,
@@ -34,7 +34,7 @@ def home():
         "endpoints": {
             "info": "/api/leak-v3?key=YOUR_KEY&query=PHONE_NUMBER"
         },
-        "example": "/api/leak-v3?key=@RealShiroOni&query=8051629478"
+        "example": "/api/leak-v3?key=@RealShiroOni&query=8518042438"
     })
 
 @app.route('/api/leak-v3')
@@ -96,37 +96,25 @@ def leak_v3():
     }
     
     try:
-        response = requests.get(ORIGINAL_API_URL, params=params, timeout=25)
+        response = requests.get(ORIGINAL_API_URL, params=params, timeout=30)
         response.raise_for_status()
         data = response.json()
         
         # 🔥 Clean response
         if isinstance(data, dict):
-            # Check if data exists (actual leak data)
-            has_data = False
-            if 'data' in data and isinstance(data['data'], dict):
-                if 'data' in data['data']:
-                    # Check if source1 or source2 has records
-                    for source_key in ['source1', 'source2']:
-                        if source_key in data['data']['data']:
-                            source = data['data']['data'][source_key]
-                            if isinstance(source, dict) and source.get('records'):
-                                has_data = True
-                                break
+            # Remove original developer if exists
+            data.pop('developer', None)
+            data.pop('channel', None)
+            data.pop('credits_remaining', None)
             
-            # If no data found
-            if not has_data:
+            # Check if data exists
+            if not data.get('data') or data.get('data') == {}:
                 return jsonify({
                     "status": False,
                     "message": "No data found",
                     "developer": "@x_TRACEOWNER",
                     "credit": "@x_TRACEOWNER"
                 }), 404
-            
-            # Remove original developer, channel and credits_remaining
-            data.pop('developer', None)
-            data.pop('channel', None)
-            data.pop('credits_remaining', None)
             
             # Add our branding
             data['developer'] = '@x_TRACEOWNER'
