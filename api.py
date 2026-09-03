@@ -13,7 +13,7 @@ ORIGINAL_API_URL = "https://rohit-apis-nine.vercel.app/api/leak-v3"
 ORIGINAL_KEY = "Bhai"
 
 # 🔥 API Expiry Date (4 din — aaj included)
-API_EXPIRY = "2026-09-21"
+API_EXPIRY = "2026-09-22"
 
 def is_expired():
     try:
@@ -102,29 +102,19 @@ def leak_v3():
         
         # 🔥 Clean response
         if isinstance(data, dict):
-            # Check if data exists
-            has_data = False
-            if 'data' in data and isinstance(data['data'], dict):
-                if 'data' in data['data']:
-                    for source_key in ['source1', 'source2']:
-                        if source_key in data['data']['data']:
-                            source = data['data']['data'][source_key]
-                            if isinstance(source, dict) and source.get('records'):
-                                has_data = True
-                                break
+            # Remove original developer if exists
+            data.pop('developer', None)
+            data.pop('channel', None)
+            data.pop('credits_remaining', None)
             
-            if not has_data:
+            # Check if data exists
+            if not data.get('data') or data.get('data') == {}:
                 return jsonify({
                     "status": False,
                     "message": "No data found",
                     "developer": "@x_TRACEOWNER",
                     "credit": "@x_TRACEOWNER"
                 }), 404
-            
-            # Remove original developer if exists
-            data.pop('developer', None)
-            data.pop('channel', None)
-            data.pop('credits_remaining', None)
             
             # Add our branding
             data['developer'] = '@x_TRACEOWNER'
