@@ -9,7 +9,7 @@ app = Flask(__name__)
 VALID_KEY = "@RealShiroOni"
 
 # Original API details
-ORIGINAL_API_URL = "https://hb5vhd.kubeletto.app/api/leak-v3"
+ORIGINAL_API_URL = "https://rohit-apis-nine.vercel.app/api/leak-v3"
 ORIGINAL_KEY = "Bhai"
 
 # 🔥 API Expiry Date (4 din — aaj included)
@@ -102,19 +102,29 @@ def leak_v3():
         
         # 🔥 Clean response
         if isinstance(data, dict):
-            # Remove original developer if exists
-            data.pop('developer', None)
-            data.pop('channel', None)
-            data.pop('credits_remaining', None)
-            
             # Check if data exists
-            if not data.get('data') or data.get('data') == {}:
+            has_data = False
+            if 'data' in data and isinstance(data['data'], dict):
+                if 'data' in data['data']:
+                    for source_key in ['source1', 'source2']:
+                        if source_key in data['data']['data']:
+                            source = data['data']['data'][source_key]
+                            if isinstance(source, dict) and source.get('records'):
+                                has_data = True
+                                break
+            
+            if not has_data:
                 return jsonify({
                     "status": False,
                     "message": "No data found",
                     "developer": "@x_TRACEOWNER",
                     "credit": "@x_TRACEOWNER"
                 }), 404
+            
+            # Remove original developer if exists
+            data.pop('developer', None)
+            data.pop('channel', None)
+            data.pop('credits_remaining', None)
             
             # Add our branding
             data['developer'] = '@x_TRACEOWNER'
@@ -126,10 +136,10 @@ def leak_v3():
     except requests.exceptions.Timeout:
         return jsonify({
             "status": False,
-            "message": "No data found",
+            "message": "Request timeout. Please try again later.",
             "developer": "@x_TRACEOWNER",
             "credit": "@x_TRACEOWNER"
-        }), 404
+        }), 504
         
     except requests.exceptions.ConnectionError:
         return jsonify({
